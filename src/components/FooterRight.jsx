@@ -1,15 +1,16 @@
+// FooterRight.jsx
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCirclePlus, faCircleCheck, faHeart, faCommentDots, faBookmark, faShare, faVolumeUp, faVolumeMute } from '@fortawesome/free-solid-svg-icons';
 import SharePopup from './SharePopup';
 import './FooterRight.css';
 
-function FooterRight({ likes, comments, saves, shares, profilePic, videoRef }) {
+function FooterRight({ likes, comments, saves, shares, profilePic, videoRef, videoUrl }) {
     const [liked, setLiked] = useState(false);
     const [saved, setSaved] = useState(false);
     const [userAddIcon, setUserAddIcon] = useState(faCirclePlus);
     const [showSharePopup, setShowSharePopup] = useState(false);
-    const [isMuted, setIsMuted] = useState(false); // State for mute/unmute
+    const [isMuted, setIsMuted] = useState(false);
 
     const handleUserAddClick = () => {
         setUserAddIcon(faCircleCheck);
@@ -51,7 +52,15 @@ function FooterRight({ likes, comments, saves, shares, profilePic, videoRef }) {
         setIsMuted((prevMuted) => !prevMuted);
     };
 
-    // Effect to mute/unmute the video based on `isMuted` state
+    const handleBookmarkClick = () => {
+        setSaved((prevSaved) => !prevSaved);
+        if (!saved) {
+            navigator.clipboard.writeText(videoUrl).then(() => {
+                alert('Video URL copied to clipboard!');
+            });
+        }
+    };
+
     React.useEffect(() => {
         if (videoRef && videoRef.current) {
             videoRef.current.muted = isMuted;
@@ -75,11 +84,7 @@ function FooterRight({ likes, comments, saves, shares, profilePic, videoRef }) {
                 <p>{comments}</p>
             </div>
             <div className='sidebar-icon'>
-                {saved ? (
-                    <FontAwesomeIcon icon={faBookmark} style={{ width: '35px', height: '35px', color: 'ffc107' }} onClick={() => setSaved(false)} />
-                ) : (
-                    <FontAwesomeIcon icon={faBookmark} style={{ width: '35px', height: '35px', color: 'white' }} onClick={() => setSaved(true)} />
-                )}
+                <FontAwesomeIcon icon={faBookmark} style={{ width: '35px', height: '35px', color: saved ? 'ffc107' : 'white' }} onClick={handleBookmarkClick} />
                 <p>{saved ? saves + 1 : saves}</p>
             </div>
             <div className='sidebar-icon'>
