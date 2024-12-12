@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCirclePlus, faCircleCheck, faHeart, faCommentDots, faBookmark, faShare } from '@fortawesome/free-solid-svg-icons';
+import { faCirclePlus, faCircleCheck, faHeart, faCommentDots, faBookmark, faShare, faVolumeUp, faVolumeMute } from '@fortawesome/free-solid-svg-icons';
 import SharePopup from './SharePopup';
 import './FooterRight.css';
 
-function FooterRight({ likes, comments, saves, shares, profilePic }) {
+function FooterRight({ likes, comments, saves, shares, profilePic, videoRef }) {
     const [liked, setLiked] = useState(false);
     const [saved, setSaved] = useState(false);
     const [userAddIcon, setUserAddIcon] = useState(faCirclePlus);
     const [showSharePopup, setShowSharePopup] = useState(false);
+    const [isMuted, setIsMuted] = useState(false); // State for mute/unmute
 
     const handleUserAddClick = () => {
         setUserAddIcon(faCircleCheck);
@@ -46,6 +47,17 @@ function FooterRight({ likes, comments, saves, shares, profilePic }) {
         setShowSharePopup(false);
     };
 
+    const handleMuteClick = () => {
+        setIsMuted((prevMuted) => !prevMuted);
+    };
+
+    // Effect to mute/unmute the video based on `isMuted` state
+    React.useEffect(() => {
+        if (videoRef && videoRef.current) {
+            videoRef.current.muted = isMuted;
+        }
+    }, [isMuted, videoRef]);
+
     return (
         <div className='footer-right'>
             <div className='sidebar-icon'>
@@ -73,6 +85,12 @@ function FooterRight({ likes, comments, saves, shares, profilePic }) {
             <div className='sidebar-icon'>
                 <FontAwesomeIcon icon={faShare} style={{ width: '35px', height: '35px', color: 'white' }} onClick={handleShareClick} />
                 <p>{shares}</p>
+            </div>
+            <div className='sidebar-icon'>
+                <button onClick={handleMuteClick} style={{ background: 'none', border: 'none', color: 'white' }}>
+                    <FontAwesomeIcon icon={isMuted ? faVolumeMute : faVolumeUp} style={{ width: '35px', height: '35px' }} />
+                </button>
+                <p>{isMuted ? 'Muted' : 'Unmuted'}</p>
             </div>
             <div className='sidebar-icon record'>
                 <img src="https://static.thenounproject.com/png/934821-200.png" alt='Record icon' />
